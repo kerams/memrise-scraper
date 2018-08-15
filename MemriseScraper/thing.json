@@ -1,0 +1,169 @@
+[{
+  "thing": {
+    "id": 4137534,
+    "pool_id": 1268,
+    "columns": {
+      "1": {
+        "alts": [
+          {
+            "id": 1,
+            "val": "\u03c3\u03c5\u03c3\u03c7\u03b5\u03c4\u03af\u03b6\u03c9 \u03ba\u03c0\/\u03ba\u03c4 \u03bc\u03b5 \u03ba\u03c0\/\u03ba\u03c4"
+          }
+        ],
+        "val": "\u03c3\u03c5\u03c3\u03c7\u03b5\u03c4\u03af\u03b6\u03c9",
+        "choices": [
+          "\u03c4\u03bf \u03ba\u03b1\u03bb\u03ac\u03b8\u03b9",
+          "\u03c4\u03bf \u03b2\u03bf\u03c5\u03bd\u03cc",
+          "\u03c3\u03c4\u03b1\u03b8\u03b5\u03c1\u03cc\u03c2",
+          "\u03ad\u03be\u03c5\u03c0\u03bd\u03bf\u03c2",
+          "\u03ba\u03bf\u03cd\u03c6\u03b9\u03bf\u03c2",
+          "\u03b7 \u03bc\u03ad\u03bd\u03c4\u03b1",
+          "\u03b7 \u03b6\u03ae\u03bb\u03b5\u03b9\u03b1",
+          "\u03c4\u03bf \u03bb\u03b5\u03be\u03b9\u03bb\u03cc\u03b3\u03b9\u03bf",
+          "\u03c4\u03bf \u03ad\u03bb\u03b5\u03bf\u03c2",
+          "\u03c4\u03bf \u03c6\u03c1\u03bf\u03cd\u03c4\u03bf"
+        ],
+        "kind": "text",
+        "accepted": [
+          "suskhetizo"
+        ],
+        "typing_corrects": {
+          
+        }
+      },
+      "2": {
+        "alts": [
+          {
+            "id": 1,
+            "val": "_associate"
+          },
+          {
+            "id": 2,
+            "val": "to associate"
+          },
+          {
+            "id": 3,
+            "val": "_relate"
+          },
+          {
+            "id": 4,
+            "val": "to link"
+          },
+          {
+            "id": 5,
+            "val": "_link"
+          }
+        ],
+        "val": "to relate (sb\/sth with sb\/sth)",
+        "choices": [
+          "relationship",
+          "to rely on",
+          "to release",
+          "to repel",
+          "to reset",
+          "to read",
+          "to receive",
+          "to reward",
+          "to reside",
+          "to reveal",
+          "to restrain",
+          "religion"
+        ],
+        "kind": "text",
+        "accepted": [
+          "relate",
+          "associate",
+          "link"
+        ],
+        "typing_corrects": {
+          
+        }
+      },
+      "3": {
+        "alts": [
+          
+        ],
+        "val": [
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137534_150930_2251_56.mp3"
+          }
+        ],
+        "choices": [
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137510_150930_1622_59.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137511_150930_1623_03.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137513_150930_2241_57.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137515_151217_0958_33.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137516_150930_2242_32.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137517_150930_2243_36.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137518_150930_2244_27.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137519_160114_0220_48.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137520_150930_2244_53.mp3"
+          },
+          {
+            "id": 1,
+            "url": "https:\/\/static.memrise.com\/uploads\/things\/audio\/4137521_150930_2245_15.mp3"
+          }
+        ],
+        "kind": "audio",
+        "accepted": [
+          
+        ],
+        "typing_corrects": {
+          
+        }
+      }
+    },
+    "attributes": {
+      "2": {
+        "val": "verb"
+      },
+      "4": {
+        "val": "\u03a4\u03bf \u03ba\u03ac\u03c0\u03bd\u03b9\u03c3\u03bc\u03b1 \u03ba\u03b1\u03b9 \u03c4\u03bf \u03b8\u03ac\u03bd\u03b1\u03c4\u03bf \u03c3\u03c5\u03c3\u03c7\u03b5\u03c4\u03af\u03b6\u03bf\u03bd\u03c4\u03b1\u03b9."
+      }
+    }
+  }
+},
+{
+  "thing": {
+    "id": 121467109,
+    "pool_id": 1268,
+    "columns": {
+      
+    },
+    "attributes": {
+	  "1": {
+	    "val": "dasdas"
+	  },
+      "3": {
+        "val": "f."
+      }
+    }
+  }
+}]

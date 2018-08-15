@@ -1,0 +1,71 @@
+{
+  "pool": {
+    "id": 2150155,
+    "name": "Greek",
+    "columns": {
+      "1": {
+        "kind": "text",
+        "label": "Greek",
+        "typing_disabled": false,
+        "typing_strict": false,
+        "show_after_tests": false,
+        "always_show": false,
+        "keyboard": "",
+        "tapping_disabled": false,
+        "classes": [
+          
+        ]
+      },
+      "2": {
+        "kind": "text",
+        "label": "English",
+        "typing_disabled": false,
+        "typing_strict": false,
+        "show_after_tests": false,
+        "always_show": false,
+        "keyboard": "",
+        "tapping_disabled": false,
+        "classes": [
+          
+        ]
+      },
+      "3": {
+        "kind": "audio",
+        "label": "Audio",
+        "typing_disabled": false,
+        "typing_strict": false,
+        "show_after_tests": false,
+        "always_show": false,
+        "keyboard": "",
+        "tapping_disabled": false,
+        "classes": [
+          
+        ]
+      }
+    },
+    "attributes": {
+      "1": {
+        "kind": "text",
+        "label": "Type",
+        "show_at_tests": true
+      },
+      "2": {
+        "kind": "text",
+        "label": "Hint",
+        "show_at_tests": true
+      },
+      "3": {
+        "kind": "text",
+        "label": "Alts",
+        "show_at_tests": true
+      },
+      "4": {
+        "kind": "text",
+        "label": "DCW\/SAS",
+        "show_at_tests": false
+      }
+    },
+    "can_curate": false,
+    "can_moderate": false
+  }
+}
