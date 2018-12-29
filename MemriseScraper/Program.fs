@@ -45,12 +45,15 @@ let createCsvRow attributeHeaders levelName (word: Word) =
     |> String.concat ";"
 
 let dumpCsv course =
-    use f = new StreamWriter (System.DateTime.Now.ToString "yyyy-MM-dd" |> sprintf "%s_%s.csv" course.Id)
+    let fileName = System.DateTime.Now.ToString "yyyy-MM-dd" |> sprintf "%s_%s.csv" course.Id
+    use f = new StreamWriter (fileName)
     createCsvHeader course |> f.WriteLine
 
     for l in course.Levels do
         for w in l.Words do
              createCsvRow course.AttributeHeaders l.Name w |> f.WriteLine
+
+    printfn "\nCreated %s." fileName
 
 let constructCourse courseId (levels: Level []) =
     let poolId = levels.[0].Words.[0].PoolId
