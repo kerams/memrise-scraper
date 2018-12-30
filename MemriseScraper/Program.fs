@@ -8,40 +8,71 @@ type Thing = JsonProvider<"thing.json", SampleIsList = true>
 
 let memrise = "https://www.memrise.com"
 
+type ColumnId = ColumnId of string
+
+type ColumnHeader = {
+    Id: ColumnId
+    Name: string }
+
+type ColumnValue =
+    | TextWithAlts of string * string list
+    | Text of string
+    | Audio of string list
+    | Image of string list
+
 type Word = {
-    TargetLanguage: string
-    TargetLanguageAlts: string []
-    SourceLanguage: string
-    SourceLanguageAlts: string []
-    Audio: string []
-    Attributes: (string * string) []
-    PoolId: int }
+    PoolId: int
+    Columns: Map<ColumnId, ColumnValue> }
 
 type Level = {
     Name: string
-    Words: Word [] }
+    Words: Word list }
 
 type Course = {
     Id: string
-    TargetLanguage: string
-    SourceLanguage: string
-    Levels: Level []
-    AttributeHeaders: (string * string) [] }
+    Levels: Level list
+    ColumnHeaders: (ColumnHeader * bool) list }
 
 let s (str: string) = str.Replace (';', '|')
 
-let a = Array.map s >> String.concat " / "
+let a = List.map s >> String.concat " / "
+
+let unifyColumnsAndAttributes (thing: Thing.Thing) =
+    let cols =
+        thing.Columns.JsonValue.Properties ()
+        |> Array.map (fun (k, v) ->
+            match (v.GetProperty "kind").AsString () with
+            | "text" ->
+                ColumnId k, TextWithAlts ((v.GetProperty "val").AsString (), (v.GetProperty "alts").AsArray () |> Array.map (fun v -> (v.GetProperty "val").AsString ()) |> Array.toList)
+            | "image" ->
+                ColumnId k, Image ((v.GetProperty "val").AsArray () |> Array.map (fun v -> (v.GetProperty "url").AsString ()) |> Array.toList)
+            | "audio" ->
+                ColumnId k, Audio ((v.GetProperty "val").AsArray () |> Array.map (fun v -> (v.GetProperty "url").AsString ()) |> Array.toList)
+            | _ -> failwith "Unexpected column kind")
+
+    let atts =
+        thing.Attributes.JsonValue.Properties ()
+        |> Array.map (fun (k, v) -> ColumnId ("a" + k), Text ((v.GetProperty "val").AsString ()))
+
+    Array.append cols atts |> Map.ofArray
 
 let createCsvHeader course =
-    [ yield "Level"; yield course.TargetLanguage; yield course.TargetLanguage + " Alts"
-      yield course.SourceLanguage; yield course.SourceLanguage + " Alts"; yield "Audio";
-      yield! course.AttributeHeaders |> Array.map (fun (_, v) -> v + " Attribute") ]
-    |> String.concat ";"
+    [ yield "Level"
+      yield! course.ColumnHeaders |> List.collect (fun ({ Name = name }, hasAlts) -> if hasAlts then [ name; name + " alts" ] else [ name ])
+    ] |> String.concat ";"
 
-let createCsvRow attributeHeaders levelName (word: Word) =
-    [ yield s levelName; yield s word.TargetLanguage; yield a word.TargetLanguageAlts
-      yield s word.SourceLanguage; yield a word.SourceLanguageAlts; yield a word.Audio
-      yield! attributeHeaders |> Array.map (fun (k, _) -> defaultArg (word.Attributes |> Array.tryFind (fun (k', _) -> k = k') |> Option.map snd) "") ]
+let createCsvRow headers levelName word =
+    let columnString col =
+        match col with
+        | TextWithAlts (main, alts) -> [ s main; a alts ]
+        | Text text -> [ s text ]
+        | Image urls -> [ a urls ]
+        | Audio urls -> [ a urls ]
+
+    let mainCols =
+        headers |> List.collect (fun ({ Id = colId; Name = _ }, hasAlts) -> defaultArg (Map.tryFind colId word.Columns |> Option.map columnString) (if hasAlts then [ ""; "" ] else [ "" ]))
+
+    s levelName :: mainCols
     |> String.concat ";"
 
 let dumpCsv course =
@@ -55,23 +86,23 @@ let dumpCsv course =
 
         for l in course.Levels do
             for w in l.Words do
-                 createCsvRow course.AttributeHeaders l.Name w |> f.WriteLine
+                 createCsvRow course.ColumnHeaders l.Name w |> f.WriteLine
 
         printfn "\nCreated %s." fileName
 
-let constructCourse courseId (levels: Level []) =
-    if levels.Length = 0 then
+let constructCourse courseId levels =
+    match levels |> List.tryPick (fun l -> List.tryHead l.Words |> Option.map (fun w -> w.PoolId)) with
+    | None ->
         None
-    else
-        let poolId = levels.[0].Words.[0].PoolId
-
+    | Some poolId ->
         let pool = (sprintf "%s/api/pool/get/?pool_id=%d" memrise poolId |> Pool.Load).Pool
 
-        let attributeHeaders = [|
-            for (header, a) in pool.Attributes.JsonValue.Properties () do
-               yield header, (a.GetProperty "label").AsString () |]
-
-        Some { Id = courseId; AttributeHeaders = attributeHeaders; Levels = levels; TargetLanguage = pool.Columns.``1``.Label; SourceLanguage = pool.Columns.``2``.Label }
+        let headers =
+            let cols1 = pool.Columns.JsonValue.Properties () |> Array.map (fun (v, a) -> { Name = (a.GetProperty "label").AsString (); Id = ColumnId v }, (a.GetProperty "kind").AsString () = "text")
+            let cols2 = pool.Attributes.JsonValue.Properties () |> Array.map (fun (v, a) -> { Name = (a.GetProperty "label").AsString (); Id = ColumnId ("a" + v) }, false)
+            Array.append cols1 cols2 |> Array.toList
+        
+        Some { Id = courseId; ColumnHeaders = headers; Levels = levels }
 
 [<EntryPoint>]
 let main argv =
@@ -93,18 +124,11 @@ let main argv =
         let words =
             level.Html.CssSelect "div[data-thing-id]"
             |> List.map (fun w ->
-                let word = sprintf "%s/api/thing/get/?thing_id=%s" memrise (w.AttributeValue "data-thing-id") |> Thing.Load
-                
-                { TargetLanguage = defaultArg (word.Thing.Columns.``1`` |> Option.map (fun x -> x.Val)) ""
-                  TargetLanguageAlts = defaultArg (word.Thing.Columns.``1`` |> Option.map (fun x -> x.Alts |> Array.map (fun y -> y.Val))) [||]
-                  SourceLanguage = defaultArg (word.Thing.Columns.``2`` |> Option.map (fun x -> x.Val)) ""
-                  SourceLanguageAlts = defaultArg (word.Thing.Columns.``2`` |> Option.map (fun x -> x.Alts |> Array.map (fun y -> y.Val))) [||]
-                  Audio = match word.Thing.Columns.``3`` with None -> [||] | Some col -> col.Val |> Array.map (fun x -> x.Url)
-                  Attributes = word.Thing.Attributes.JsonValue.Properties () |> Array.map (fun (k, v) -> k, (v.GetProperty "val").AsString ())
-                  PoolId = word.Thing.PoolId })
-            |> List.toArray
+                let thing = sprintf "%s/api/thing/get/?thing_id=%s" memrise (w.AttributeValue "data-thing-id") |> Thing.Load
+                { Columns = unifyColumnsAndAttributes thing.Thing; PoolId = thing.Thing.PoolId })
                         
         { Name = name; Words = words })
+    |> Array.toList
     |> constructCourse courseId
     |> dumpCsv
 
