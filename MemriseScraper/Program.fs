@@ -12,6 +12,7 @@ type ColumnId = ColumnId of string
 
 type ColumnHeader = {
     Id: ColumnId
+    HasAlts: bool
     Name: string }
 
 type ColumnValue =
@@ -31,7 +32,7 @@ type Level = {
 type Course = {
     Id: string
     Levels: Level list
-    ColumnHeaders: (ColumnHeader * bool) list }
+    ColumnHeaders: ColumnHeader list }
 
 let s (str: string) = str.Replace (';', '|')
 
@@ -58,7 +59,7 @@ let unifyColumnsAndAttributes (thing: Thing.Thing) =
 
 let createCsvHeader course =
     [ yield "Level"
-      yield! course.ColumnHeaders |> List.collect (fun ({ Name = name }, hasAlts) -> if hasAlts then [ name; name + " alts" ] else [ name ])
+      yield! course.ColumnHeaders |> List.collect (fun { Name = name; HasAlts = hasAlts } -> if hasAlts then [ name; name + " alts" ] else [ name ])
     ] |> String.concat ";"
 
 let createCsvRow headers levelName word =
@@ -70,7 +71,7 @@ let createCsvRow headers levelName word =
         | Audio urls -> [ a urls ]
 
     let mainCols =
-        headers |> List.collect (fun ({ Id = colId; Name = _ }, hasAlts) -> defaultArg (Map.tryFind colId word.Columns |> Option.map columnString) (if hasAlts then [ ""; "" ] else [ "" ]))
+        headers |> List.collect (fun { Id = id; HasAlts = hasAlts } -> defaultArg (Map.tryFind id word.Columns |> Option.map columnString) (if hasAlts then [ ""; "" ] else [ "" ]))
 
     s levelName :: mainCols
     |> String.concat ";"
@@ -98,8 +99,8 @@ let constructCourse courseId levels =
         let pool = (sprintf "%s/api/pool/get/?pool_id=%d" memrise poolId |> Pool.Load).Pool
 
         let headers =
-            let cols1 = pool.Columns.JsonValue.Properties () |> Array.map (fun (v, a) -> { Name = (a.GetProperty "label").AsString (); Id = ColumnId v }, (a.GetProperty "kind").AsString () = "text")
-            let cols2 = pool.Attributes.JsonValue.Properties () |> Array.map (fun (v, a) -> { Name = (a.GetProperty "label").AsString (); Id = ColumnId ("a" + v) }, false)
+            let cols1 = pool.Columns.JsonValue.Properties () |> Array.map (fun (v, a) -> { Name = (a.GetProperty "label").AsString (); Id = ColumnId v; HasAlts = (a.GetProperty "kind").AsString () = "text" })
+            let cols2 = pool.Attributes.JsonValue.Properties () |> Array.map (fun (v, a) -> { Name = (a.GetProperty "label").AsString (); Id = ColumnId ("a" + v); HasAlts = false })
             Array.append cols1 cols2 |> Array.toList
         
         Some { Id = courseId; ColumnHeaders = headers; Levels = levels }
