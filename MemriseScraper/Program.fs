@@ -132,5 +132,4 @@ let main argv =
     |> constructCourse courseId
     |> dumpCsv
 
-    printfn ""
     0
