@@ -9,5 +9,5 @@ Dumps data from all of the columns (i.e. alts, audio links, custom columns, ...)
 - Once the process is done, the CSV is located in the same folder as the exe.
 
 ### Current limitations
-- Does not work with courses that have multimedia levels
+- Does not work with courses that only have a single level
 - Windows only

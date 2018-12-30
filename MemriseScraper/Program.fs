@@ -45,26 +45,33 @@ let createCsvRow attributeHeaders levelName (word: Word) =
     |> String.concat ";"
 
 let dumpCsv course =
-    let fileName = System.DateTime.Now.ToString "yyyy-MM-dd" |> sprintf "%s_%s.csv" course.Id
-    use f = new StreamWriter (fileName)
-    createCsvHeader course |> f.WriteLine
+    match course with
+    | None ->
+        printfn "\nCourses with a single level are not supported."
+    | Some course ->
+        let fileName = System.DateTime.Now.ToString "yyyy-MM-dd" |> sprintf "%s_%s.csv" course.Id
+        use f = new StreamWriter (fileName)
+        createCsvHeader course |> f.WriteLine
 
-    for l in course.Levels do
-        for w in l.Words do
-             createCsvRow course.AttributeHeaders l.Name w |> f.WriteLine
+        for l in course.Levels do
+            for w in l.Words do
+                 createCsvRow course.AttributeHeaders l.Name w |> f.WriteLine
 
-    printfn "\nCreated %s." fileName
+        printfn "\nCreated %s." fileName
 
 let constructCourse courseId (levels: Level []) =
-    let poolId = levels.[0].Words.[0].PoolId
+    if levels.Length = 0 then
+        None
+    else
+        let poolId = levels.[0].Words.[0].PoolId
 
-    let pool = (sprintf "%s/api/pool/get/?pool_id=%d" memrise poolId |> Pool.Load).Pool
+        let pool = (sprintf "%s/api/pool/get/?pool_id=%d" memrise poolId |> Pool.Load).Pool
 
-    let attributeHeaders = [|
-        for (header, a) in pool.Attributes.JsonValue.Properties () do
-           yield header, (a.GetProperty "label").AsString () |]
+        let attributeHeaders = [|
+            for (header, a) in pool.Attributes.JsonValue.Properties () do
+               yield header, (a.GetProperty "label").AsString () |]
 
-    { Id = courseId; AttributeHeaders = attributeHeaders; Levels = levels; TargetLanguage = pool.Columns.``1``.Label; SourceLanguage = pool.Columns.``2``.Label }
+        Some { Id = courseId; AttributeHeaders = attributeHeaders; Levels = levels; TargetLanguage = pool.Columns.``1``.Label; SourceLanguage = pool.Columns.``2``.Label }
 
 [<EntryPoint>]
 let main argv =
