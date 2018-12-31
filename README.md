@@ -1,5 +1,5 @@
 ## memrise-scraper
-Dumps data from all of the columns (i.e. alts, audio links, custom columns, ...) in the first database into a CSV file, without the need to log in.
+Dumps data from all of the columns (i.e. alts, audio links, custom columns, ...) into a CSV file, without the need to log in.
 
 ### Usage
 - Download `MemriseScraper.zip` from [releases](http://github.com/kerams/memrise-scraper/releases/latest) and extract it somewhere.
