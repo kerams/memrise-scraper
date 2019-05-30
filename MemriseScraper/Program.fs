@@ -20,6 +20,7 @@ type ColumnValue =
     | Text of string
     | Audio of string list
     | Image of string list
+    | Video of string list
 
 type Word = {
     PoolId: int
@@ -49,6 +50,8 @@ let unifyColumnsAndAttributes (thing: Thing.Thing) =
                 ColumnId k, Image ((v.GetProperty "val").AsArray () |> Array.map (fun v -> (v.GetProperty "url").AsString ()) |> Array.toList)
             | "audio" ->
                 ColumnId k, Audio ((v.GetProperty "val").AsArray () |> Array.map (fun v -> (v.GetProperty "url").AsString ()) |> Array.toList)
+            | "video" ->
+                ColumnId k, Video ((v.GetProperty "val").AsArray () |> Array.map (fun v -> (v.GetProperty "high").AsString ()) |> Array.toList)
             | _ -> failwith "Unexpected column kind")
 
     let atts =
@@ -69,6 +72,7 @@ let createCsvRow headers levelName word =
         | Text text -> [ s text ]
         | Image urls -> [ a urls ]
         | Audio urls -> [ a urls ]
+        | Video urls -> [ a urls ]
 
     let mainCols =
         headers |> List.collect (fun { Id = id; HasAlts = hasAlts } -> defaultArg (Map.tryFind id word.Columns |> Option.map columnString) (if hasAlts then [ ""; "" ] else [ "" ]))
