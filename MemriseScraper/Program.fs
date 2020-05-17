@@ -127,10 +127,13 @@ let main argv =
         let name = (level.Html.CssSelect "h3.progress-box-title" |> List.head).InnerText().Trim()
 
         let words =
-            level.Html.CssSelect "div[data-thing-id]"
-            |> List.map (fun w ->
-                let thing = sprintf "%s/api/thing/get/?thing_id=%s" memrise (w.AttributeValue "data-thing-id") |> Thing.Load
-                { Columns = unifyColumnsAndAttributes thing.Thing; PoolId = thing.Thing.PoolId })
+            if level.Html.CssSelect ".grammar-download" |> Seq.isEmpty then
+                level.Html.CssSelect "div[data-thing-id]"
+                |> List.map (fun w ->
+                    let thing = sprintf "%s/api/thing/get/?thing_id=%s" memrise (w.AttributeValue "data-thing-id") |> Thing.Load
+                    { Columns = unifyColumnsAndAttributes thing.Thing; PoolId = thing.Thing.PoolId })
+            else
+                []
                         
         { Name = name; Words = words })
     |> Array.toList
