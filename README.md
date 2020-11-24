@@ -1,6 +1,3 @@
-## NOTICE AS OF NOVEMBER 2020
-The scraper no longer works. Memrise has removed a part of the API that provides information about words. The data is now available only after logging in and I have no plans in the short-term to support this.
-
 ## memrise-scraper
 Dumps data from all of the columns (i.e. alts, audio links, custom columns, ...) into a CSV file, without the need to log in.
 
