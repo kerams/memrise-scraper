@@ -6,7 +6,7 @@ type Pool = JsonProvider<"pool.json">
 type Level' = HtmlProvider<"level.html">
 type Thing = JsonProvider<"thing.json", SampleIsList = true>
 
-let memrise = "https://www.memrise.com"
+let memrise = "https://app.memrise.com"
 
 type ColumnId = ColumnId of string
 
