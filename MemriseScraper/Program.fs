@@ -35,9 +35,16 @@ type Course = {
     Levels: Level list
     ColumnHeaders: ColumnHeader list }
 
-let s (str: string) = str.Replace (';', '|')
+let escapeTextForCsvCell (str: string) =
+    let needToQuote = str |> String.exists (fun c -> c = ';' || c = '"' || c = '\r' || c = '\n')
 
-let a = List.map s >> String.concat " / "
+    if needToQuote then
+        let str = str.Replace ("\"", "\"\"")
+        "\"" + str + "\""
+    else
+        str
+
+let concatAlts = String.concat " / " >> escapeTextForCsvCell
 
 let unifyColumnsAndAttributes (thing: Thing.Thing) =
     let cols =
@@ -61,23 +68,22 @@ let unifyColumnsAndAttributes (thing: Thing.Thing) =
     Array.append cols atts |> Map.ofArray
 
 let createCsvHeader course =
-    [ yield "Level"
-      yield! course.ColumnHeaders |> List.collect (fun { Name = name; HasAlts = hasAlts } -> if hasAlts then [ name; name + " alts" ] else [ name ])
-    ] |> String.concat ";"
+    "Level" :: (course.ColumnHeaders |> List.collect (fun { Name = name; HasAlts = hasAlts } -> if hasAlts then [ escapeTextForCsvCell name; escapeTextForCsvCell (name + " alts") ] else [ escapeTextForCsvCell name ]))
+    |> String.concat ";"
 
 let createCsvRow headers levelName word =
     let columnString col =
         match col with
-        | TextWithAlts (main, alts) -> [ s main; a alts ]
-        | Text text -> [ s text ]
-        | Image urls -> [ a urls ]
-        | Audio urls -> [ a urls ]
-        | Video urls -> [ a urls ]
+        | TextWithAlts (main, alts) -> [ escapeTextForCsvCell main; concatAlts alts ]
+        | Text text -> [ escapeTextForCsvCell text ]
+        | Image urls -> [ concatAlts urls ]
+        | Audio urls -> [ concatAlts urls ]
+        | Video urls -> [ concatAlts urls ]
 
     let mainCols =
         headers |> List.collect (fun { Id = id; HasAlts = hasAlts } -> defaultArg (Map.tryFind id word.Columns |> Option.map columnString) (if hasAlts then [ ""; "" ] else [ "" ]))
 
-    s levelName :: mainCols
+    escapeTextForCsvCell levelName :: mainCols
     |> String.concat ";"
 
 let dumpCsv course =
