@@ -9,7 +9,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>MemriseScraper</RootNamespace>
     <AssemblyName>MemriseScraper</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <UseStandardResourceNames>False</UseStandardResourceNames>
     <Name>MemriseScraper</Name>

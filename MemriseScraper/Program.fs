@@ -121,6 +121,8 @@ let main argv =
         printfn "Provide a course ID."
         exit 1
 
+    System.Net.ServicePointManager.SecurityProtocol <- System.Net.SecurityProtocolType.Tls11 ||| System.Net.SecurityProtocolType.Tls12
+
     let courseId = argv.[0]
     let course = sprintf "%s/course/%s" memrise courseId |> Course'.Load
 
